@@ -104,9 +104,8 @@ per input point.
 
 The driver bisects on each algorithm's own parameter until the retained fraction is within 0.5%
 of the target. If that tolerance cannot be met it accepts the closest result within 2%; it also
-stops when the parameter interval falls below 0.05% or after 40 iterations. In that last case it
-evaluates 64 equally spaced parameters across the final interval and reports the closest
-measurement. A target that an algorithm cannot reach at any parameter is reported with status
+stops when the parameter interval falls below 0.05% or after 40 iterations. The search reports
+the closest evaluation it found, and a target that no parameter can reach is reported with status
 `UNREACHABLE` and must not be quoted.
 
 To reproduce the runtime tables, run the driver on an otherwise idle machine.

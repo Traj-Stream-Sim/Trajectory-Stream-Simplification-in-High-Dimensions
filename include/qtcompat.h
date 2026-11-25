@@ -42,26 +42,6 @@
 #define qSort(v) std::sort((v).begin(), (v).end())
 #define qDebug(...) do { } while (0)
 
-/* ---- clock -------------------------------------------------------------- */
-/* The published mains time themselves with gettimeofday, which is POSIX. Those mains
-   are dead code here -- the harness times the algorithm call -- but they still have to
-   compile. <winsock2.h> and friends already define struct timeval on MinGW, and it is
-   not worth detecting which header did it, so the struct is only declared if absent. */
-#ifndef _TIMEVAL_DEFINED
-#ifndef _WINSOCK2API_
-struct timeval { long tv_sec; long tv_usec; };
-#endif
-#endif
-inline int gettimeofday(struct timeval* tv, void*)
-{
-    using namespace std::chrono;
-    long long us = duration_cast<microseconds>(
-                       system_clock::now().time_since_epoch()).count();
-    tv->tv_sec  = (long)(us / 1000000LL);
-    tv->tv_usec = (long)(us % 1000000LL);
-    return 0;
-}
-
 /* ---- QObject ------------------------------------------------------------ */
 class QObject {
 public:

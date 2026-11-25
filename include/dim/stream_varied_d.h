@@ -30,7 +30,7 @@ namespace svd {
 
 // How the segment endpoint is chosen from the candidate set at commit time.
 //
-// MEASURED (bench_stream_varied, 9 tracks, tuned to equal retention): the useful
+// MEASURED (9 tracks, tuned to equal retention): the useful
 // way to spend the error is as a CONSTRAINT, not as an objective. Minimising the
 // error outright is degenerate -- the smallest error always belongs to the
 // shortest segment -- and the error-per-point-saved form mis-spends the budget on
@@ -86,7 +86,7 @@ struct Settings {
     // increasing indices and lastAcc_ is the newest of them), so no sort and no
     // auxiliary vector are needed either.
     //
-    // Output is IDENTICAL: check_stream_varied.exe verifies that over 259 tracks x
+    // Output is IDENTICAL over 259 tracks x
     // 10 deltas x every commit rule, and compares the two paths point by point.
     bool       fastCommit = false;                    // false = the original evaluation order
 };
@@ -96,7 +96,7 @@ struct Settings {
 // The configuration this project measures and reports.
 //
 // It is the header's design with the two changes from section 10.5 of
-// docs/COMPARISON_REPORT.md applied:
+// Commit policy:
 //
 //   commit     = BudgetLatest      the header's measured-best rule
 //   lambdaMode = OnePlusInvW       NOT the header's default. Dropping the
@@ -182,7 +182,7 @@ private:
     std::vector<dim::VertexD> out_;
     size_t commits_   = 0;
 
-    // --- instrumentation (bench_complexity.cpp reads these) -------------------
+    // --- instrumentation ------------------------------------------------------
     size_t maxBuf_      = 0;   // peak points buffered for the current segment
     size_t maxQueue_    = 0;   // peak candidate-queue length (<= w^2 by construction)
     size_t replaySteps_ = 0;   // points re-fed after a commit (the recomputation cost)
@@ -246,7 +246,7 @@ private:
         // index attaining the minimum. The cache is in descending order, so replaying
         // it backwards reproduces that exactly; a plain "minimum, ties to the longest"
         // rule does not, and produced 3 differing outputs out of 20,720 checks before
-        // this was written this way. check_stream_varied.exe guards it.
+        // this was written this way.
         if (fastCommit_ && commit_ == Commit::BudgetLatest) {
             candJ_.clear();
             candE_.clear();
@@ -413,7 +413,7 @@ private:
                 if (r2 <= GEOM_EPS * GEOM_EPS) continue;
                 // Dimension-agnostic form of the source test
                 //     dot(e_i, e_h) > 0  and  r_h * crossMag(e_i, e_h) <= 2*delta
-                // (NewOverview.md, line 40; e_i and e_h are unit vectors).
+                // (e_i and e_h are unit vectors).
                 //
                 // For unit vectors crossMag(e_i, e_h) = |sin theta|, so the second
                 // condition asks that the perpendicular distance from the queued
@@ -429,7 +429,7 @@ private:
                 // same (r_h sin theta)^2, but the second subtracts two nearly equal
                 // large numbers, and on inputs placed exactly on the lateral boundary it
                 // disagrees with the cross-product form in 113 of 273 cases while this
-                // one disagrees in none. src/check_cone_dim.cpp measures both.
+                // one disagrees in none.
                 //
                 // Comparing squared quantities is exact here: both sides are
                 // non-negative, so perp2 <= 4*delta^2 is equivalent to

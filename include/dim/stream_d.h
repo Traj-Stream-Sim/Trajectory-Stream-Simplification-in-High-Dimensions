@@ -12,12 +12,12 @@
 // untouched. What changes is only the arithmetic inside a distance or an angle, which is
 // now a loop over the d components instead of a pair of x/y expressions.
 //
-// The 2D file is untouched, so a d = 2 run can still use it; src/check_d_equivalence.cpp
+// The 2D implementation is untouched, so a d = 2 run can still use it.
 // requires this class to select exactly the same vertices as the 2D one at d = 2.
 //
 // Original header follows.
 //
-// Streaming delta-simplification, implemented from NewOverview.md.
+// Streaming delta-simplification, d-dimensional.
 // Exposed as a reusable library class that accumulates the simplified output
 // polyline. Parameters: delta (error threshold), w (target-queue capacity w^2,
 // with lambda = 1 + 1/w).
@@ -44,7 +44,7 @@ private:
     dim::VertexD last_vertex;     // v_{i-1} (previously accepted vertex)
     std::vector<dim::VertexD> output;
 
-    // Instrumentation only (bench_complexity.cpp reads it): number of
+    // Instrumentation only: number of
     // (point, queue-entry) pairs visited by the CASE 1 cone re-test. Counts the
     // same operation as StreamVariedSimplifier::coneScans(). Never read by any
     // branch of the algorithm.
@@ -125,7 +125,7 @@ private:
                 // The cone test. This is the #else arm of the 2D file, which the
                 // generator deleted by mistake when it stripped the CONE_LEGACY_2D
                 // switch -- and with it the whole test, which made the d class accept
-                // every point in CASE 1. src/check_d_equivalence.cpp caught it.
+                // every point in CASE 1.
                 const double proj = dim::dotD(e_i, V_h);
                 const dim::VertexD perp = dim::perpD(V_h, e_i, proj);
                 const double perp2 = dim::sqMagD(perp);
@@ -136,7 +136,7 @@ private:
 
                 // Dimension-agnostic form of the source test
                 //     dot(e_i, e_h) > 0  and  r_h * crossMag(e_i, e_h) <= 2*delta
-                // (NewOverview.md, line 40; e_i and e_h are unit vectors).
+                // (e_i and e_h are unit vectors).
                 //
                 // For unit vectors crossMag(e_i, e_h) = |sin theta|, so the second
                 // condition asks that the perpendicular distance from the queued
@@ -152,7 +152,7 @@ private:
                 // same (r_h sin theta)^2, but the second subtracts two nearly equal
                 // large numbers, and on inputs placed exactly on the lateral boundary it
                 // disagrees with the cross-product form in 113 of 273 cases while this
-                // one disagrees in none. src/check_cone_dim.cpp measures both.
+                // one disagrees in none.
                 //
                 // Comparing squared quantities is exact here: both sides are
                 // non-negative, so perp2 <= 4*delta^2 is equivalent to

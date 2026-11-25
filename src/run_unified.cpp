@@ -1,29 +1,15 @@
-//  run_unified.cpp -- ONE benchmark driver for all datasets and all algorithms.
+//  run_unified.cpp -- one benchmark driver for all datasets and all algorithms.
 //
-//  AUDIT FINDING. The previous GeoLife/Rome pipeline prepared data differently per
-//  algorithm: `stream` and `svaried` received normalizeTrajectory(), while `squishe` and
-//  `dots` received projectToMetres(). That is algorithm-specific preprocessing, and
-//  projectToMetres is not even isotropic -- it scales longitude by 111320*cos(lat) against
-//  latitude's 110540, which compresses one axis relative to the other by up to 30% at high
-//  latitudes. The published algorithms were therefore solving a geometrically different
-//  problem from ours.
+//  Isotropic normalisation, applied identically to every dataset and every algorithm:
 //
-//  STANDARDISED METHODOLOGY, applied identically to every dataset and every algorithm:
+//       span = max over axes k of ( max_i c[i][k] - min_i c[i][k] )
+//       c'[k] = ( c[k] - min[k] ) / span
+//       t'    = t
 //
-//       span = max over axes of (max_c - min_c)          one common factor
-//       c'[k] = (c[k] - min[k]) / span                    all axes divided by the same number
-//       t'   = t                                          untouched
-//
-//  Time is left alone deliberately: SED's interpolation parameter is
-//  (t_m - t_s)/(t_e - t_s), a ratio, so any uniform scaling of the clock cancels exactly and
-//  cannot affect any result. Introducing a time scale would be a no-op dressed as care.
-//
-//  Consequences:
-//    * no per-axis rescaling of any kind, on any dataset;
-//    * no latitude-dependent projection;
-//    * every parameter is relative to the trajectory's own extent, so the same grid means
-//      the same thing for every algorithm and every dataset;
-//    * the Frechet error is in the same normalised units everywhere.
+//  One divisor is shared by all axes, so aspect ratios are preserved. No axis is scaled
+//  separately and no latitude-dependent projection is applied. Timestamps are left alone:
+//  the synchronous distance uses the ratio (t_m - t_s)/(t_e - t_s), so a uniform time
+//  scaling cancels exactly.
 
 #include <cstdio>
 #include <cstdlib>
