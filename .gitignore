@@ -1,0 +1,19 @@
+# build output
+bin/*
+!bin/.gitkeep
+build/
+*.o
+*.obj
+*.exe
+*.out
+
+# experiment output
+results/*.txt
+!results/.gitkeep
+results/*.csv
+
+# editor and OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
